@@ -1,29 +1,103 @@
 [
   {
     "step": 1,
-    "query": "Chào bạn, bạn có thể giới thiệu quy chế học vụ cơ bản của Đại học VinUni không?",
+    "query": "Chào bạn, VinBus là dịch vụ gì và tôi có thể hỏi trợ lý những thông tin nào?",
     "action_type": "FINAL_ANSWER",
-    "thought": "Câu hỏi chung về quy chế học vụ, trả lời trực tiếp không cần gọi Tool.",
-    "output": "[Mock Agent Response]: Xin chào! Quy chế học vụ VinUni yêu cầu sinh viên tích lũy tối thiểu 120 tín chỉ và duy trì GPA trên 2.0 để tốt nghiệp.",
-    "latency_ms": 2845.93
+    "thought": "OpenAI phản hồi trực tiếp bằng văn bản (không cần gọi công cụ).",
+    "output": "VinBus là dịch vụ xe buýt điện công cộng do VinGroup phát triển, cung cấp các tuyến xe buýt chạy bằng điện tại các khu vực đô thị lớn của Việt Nam (như Hà Nội, TP.HCM, Đà Nẵng…). Các xe buýt VinBus được thiết kế hiện đại, không gây ô nhiễm và hoạt động theo lịch trình cố định, giúp hành khách di chuyển nhanh chóng, tiện lợi và giảm tải giao thông.\n\nBạn có thể hỏi trợ lý VinBus các thông tin sau:\n\n| Chủ đề | Mô tả |\n|-------|------|\n| **Tra cứu lộ trình** | Kiểm tra các tuyến xe, điểm dừng, giờ hoạt động, tần suất xe, bản đồ tuyến. |\n| **Đăng ký vé tháng** | Đặt mua vé tháng cho một hoặc nhiều tháng, biết giá vé, quy trình đăng ký và nhận vé. |\n| **Giá vé** | Thông tin về giá vé một chiều, vé ngày, vé tháng, ưu đãi sinh viên, người cao tuổi, ... |\n| **Lịch trình và thời gian** | Thời gian khởi hành, tần suất chạy, thời gian dự kiến đến các điểm dừng. |\n| **Câu hỏi chung** | Thông tin về quy định lên xe, cách thanh toán, các dịch vụ hỗ trợ khách hàng, ... |\n| **Sự cố / Khiếu nại** | Hướng dẫn cách báo cáo sự cố, mất thẻ, khiếu nại dịch vụ. |\n| **Tin tức & khuyến mãi** | Các chương trình ưu đãi, sự kiện, cập nhật mới về dịch vụ. |\n\nNếu bạn cần tra cứu chi tiết một tuyến cụ thể (ví dụ “E01”) hoặc muốn đăng ký vé tháng, chỉ cần cung cấp thông tin cần thiết và mình sẽ hỗ trợ ngay. Bạn muốn biết gì tiếp theo?",
+    "latency_ms": 3547.08
   },
   {
     "step": 1,
-    "query": "Hãy tra cứu thông tin học vụ của sinh viên SV2026001.",
+    "query": "Hãy tra cứu lộ trình tuyến E01 của VinBus.",
     "action_type": "TOOL_EXECUTION",
-    "tool_name": "academic_query",
+    "tool_name": "route_lookup",
     "arguments": {
-      "student_id": "SV2026001"
+      "route_number": "E01"
     },
-    "observation": {},
-    "latency_ms": 799.12
+    "observation": {
+      "status": "SUCCESS",
+      "route_number": "E01",
+      "data": {
+        "route_name": "Bến xe Mỹ Đình - VinUni",
+        "stops": [
+          "Mỹ Đình",
+          "Cầu Giấy",
+          "Khu đô thị Ocean Park",
+          "VinUni"
+        ],
+        "operating_hours": "05:30 - 22:00",
+        "frequency": "15 - 20 phút/chuyến"
+      }
+    },
+    "latency_ms": 1048.54
   },
   {
     "step": 2,
-    "query": "Hãy tra cứu thông tin học vụ của sinh viên SV2026001.",
+    "query": "Hãy tra cứu lộ trình tuyến E01 của VinBus.",
     "action_type": "FINAL_ANSWER",
     "thought": "Tổng hợp kết quả từ MCP Server thành công.",
-    "output": "Chưa thể trả lời chi tiết do chưa nhận được dữ liệu từ MCP Server (hãy hoàn thành TODO 2.1).",
+    "output": "Tuyến E01 (Bến xe Mỹ Đình - VinUni): điểm dừng Mỹ Đình, Cầu Giấy, Khu đô thị Ocean Park, VinUni; hoạt động 05:30 - 22:00, tần suất 15 - 20 phút/chuyến.",
+    "latency_ms": 10.0
+  },
+  {
+    "step": 1,
+    "query": "Đăng ký vé tháng VinBus tuyến E01 cho Nguyễn Văn An, số điện thoại 0901234567, thời hạn 1 tháng.",
+    "action_type": "TOOL_EXECUTION",
+    "tool_name": "monthly_pass_registration",
+    "arguments": {
+      "duration_months": 1,
+      "passenger_name": "Nguyễn Văn An",
+      "phone_number": "0901234567",
+      "route_number": "E01"
+    },
+    "observation": {
+      "status": "SUCCESS",
+      "registration_id": "VB-4567-99",
+      "passenger_name": "Nguyễn Văn An",
+      "phone_number": "0901234567",
+      "route_number": "E01",
+      "duration_months": 1,
+      "message": "Đăng ký vé tháng thành công cho Nguyễn Văn An, tuyến E01, thời hạn 1 tháng."
+    },
+    "latency_ms": 709.23
+  },
+  {
+    "step": 2,
+    "query": "Đăng ký vé tháng VinBus tuyến E01 cho Nguyễn Văn An, số điện thoại 0901234567, thời hạn 1 tháng.",
+    "action_type": "FINAL_ANSWER",
+    "thought": "Tổng hợp kết quả từ MCP Server thành công.",
+    "output": "Đăng ký vé tháng thành công cho Nguyễn Văn An, tuyến E01, thời hạn 1 tháng.",
+    "latency_ms": 10.0
+  },
+  {
+    "step": 1,
+    "query": "Tôi muốn đi VinBus từ Mỹ Đình đến VinUni và đăng ký luôn vé tháng tuyến phù hợp cho Nguyễn Văn An, số điện thoại 0901234567.",
+    "action_type": "FINAL_ANSWER",
+    "thought": "OpenAI phản hồi trực tiếp bằng văn bản (không cần gọi công cụ).",
+    "output": "Để đăng ký vé tháng cho hành trình **Mỹ Đình → VinUni**, tôi cần biết mã số tuyến VinBus mà bạn sẽ sử dụng (ví dụ: “E01”, “E02”, …). Bạn có thể cung cấp mã tuyến này được không? Khi có mã tuyến, tôi sẽ tra cứu lộ trình và tiến hành đăng ký vé tháng cho Nguyễn Văn An ngay lập tức.",
+    "latency_ms": 1175.88
+  },
+  {
+    "step": 1,
+    "query": "Hãy tra cứu lộ trình tuyến E99 của VinBus.",
+    "action_type": "TOOL_EXECUTION",
+    "tool_name": "route_lookup",
+    "arguments": {
+      "route_number": "E99"
+    },
+    "observation": {
+      "status": "NOT_FOUND",
+      "message": "Không tìm thấy tuyến VinBus có mã 'E99'."
+    },
+    "latency_ms": 673.68
+  },
+  {
+    "step": 2,
+    "query": "Hãy tra cứu lộ trình tuyến E99 của VinBus.",
+    "action_type": "FINAL_ANSWER",
+    "thought": "Tổng hợp kết quả từ MCP Server thành công.",
+    "output": "Không tìm thấy tuyến VinBus có mã 'E99'.",
     "latency_ms": 10.0
   }
 ]

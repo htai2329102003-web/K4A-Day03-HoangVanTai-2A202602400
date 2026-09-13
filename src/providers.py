@@ -38,25 +38,25 @@ class MockOfflineProvider(BaseLLMProvider):
         prompt_lower = prompt.lower()
         
         # Mô phỏng nhận diện intent gọi Tool
-        if "sv2026001" in prompt_lower and "đặt lịch" in prompt_lower:
+        if "đăng ký" in prompt_lower and "vé tháng" in prompt_lower:
             return {
                 "type": "tool_call",
-                "tool_name": "schedule_appointment",
-                "arguments": {"student_id": "SV2026001", "datetime_str": "14:00 15/09/2026", "advisor_name": "PGS.TS Nguyễn Văn A"},
-                "thought": "Người dùng yêu cầu đặt lịch hẹn tư vấn cho sinh viên SV2026001. Tôi sẽ gọi tool schedule_appointment."
+                "tool_name": "monthly_pass_registration",
+                "arguments": {"passenger_name": "Nguyễn Văn An", "phone_number": "0901234567", "route_number": "E01", "duration_months": 1},
+                "thought": "Người dùng muốn đăng ký vé tháng VinBus. Tôi sẽ gọi tool monthly_pass_registration."
             }
-        elif "sv2026001" in prompt_lower or "tra cứu" in prompt_lower:
+        elif "tra cứu" in prompt_lower or "tuyến" in prompt_lower:
             return {
                 "type": "tool_call",
-                "tool_name": "academic_query",
-                "arguments": {"student_id": "SV2026001"},
-                "thought": "Người dùng muốn tra cứu thông tin học vụ của sinh viên SV2026001. Tôi sẽ gọi tool academic_query."
+                "tool_name": "route_lookup",
+                "arguments": {"route_number": "E99" if "e99" in prompt_lower else "E01"},
+                "thought": "Người dùng muốn tra cứu lộ trình VinBus. Tôi sẽ gọi tool route_lookup."
             }
         else:
             return {
                 "type": "text",
-                "content": f"[Mock Agent Response]: Xin chào! Quy chế học vụ VinUni yêu cầu sinh viên tích lũy tối thiểu 120 tín chỉ và duy trì GPA trên 2.0 để tốt nghiệp.",
-                "thought": "Câu hỏi chung về quy chế học vụ, trả lời trực tiếp không cần gọi Tool."
+                "content": "[Mock Agent Response]: VinBus là dịch vụ xe bus điện; bạn có thể hỏi về lộ trình tuyến hoặc đăng ký vé tháng.",
+                "thought": "Câu hỏi chung về dịch vụ VinBus, trả lời trực tiếp không cần gọi Tool."
             }
 
 
@@ -136,17 +136,18 @@ class GeminiProvider(BaseLLMProvider):
 
 
 class OpenAIProvider(BaseLLMProvider):
-    """OpenAI Provider (Native Tool Calling với OpenAI SDK)"""
-    def __init__(self, api_key: str = None, model: str = None):
+    """OpenAI-compatible Provider (OpenAI, Groq hoặc xAI)"""
+    def __init__(self, api_key: str = None, model: str = None, base_url: str = None):
         self.api_key = api_key or os.getenv("OPENAI_API_KEY")
         self.model_name = model or os.getenv("LLM_MODEL") or "gpt-4o-mini"
+        self.base_url = base_url or os.getenv("OPENAI_BASE_URL")
 
     def generate(self, prompt: str, system_prompt: str = "") -> str:
         if not self.api_key or self.api_key == "your_openai_api_key_here":
             return "[OpenAI Error]: Chưa cấu hình OPENAI_API_KEY trong file .env! Đang sử dụng chế độ Mock."
         try:
             from openai import OpenAI
-            client = OpenAI(api_key=self.api_key)
+            client = OpenAI(api_key=self.api_key, base_url=self.base_url)
             messages = []
             if system_prompt:
                 messages.append({"role": "system", "content": system_prompt})
@@ -163,7 +164,7 @@ class OpenAIProvider(BaseLLMProvider):
 
         try:
             from openai import OpenAI
-            client = OpenAI(api_key=self.api_key)
+            client = OpenAI(api_key=self.api_key, base_url=self.base_url)
 
             tools = []
             for tool in tools_schema:
@@ -225,6 +226,16 @@ def get_llm_provider() -> BaseLLMProvider:
         key = os.getenv("OPENAI_API_KEY")
         if key and key != "your_openai_api_key_here":
             return OpenAIProvider()
+        else:
+            return MockOfflineProvider()
+    elif provider_type == "groq":
+        key = os.getenv("GROQ_API_KEY")
+        if key:
+            return OpenAIProvider(
+                api_key=key,
+                model=os.getenv("LLM_MODEL") or "llama-3.3-70b-versatile",
+                base_url="https://api.groq.com/openai/v1"
+            )
         else:
             return MockOfflineProvider()
     elif provider_type == "mock":

@@ -1,0 +1,37 @@
+[
+  {
+    "id": "TC01",
+    "type": "direct_query",
+    "question": "Chào bạn, VinBus là dịch vụ gì và tôi có thể hỏi trợ lý những thông tin nào?",
+    "expected_behavior": "Agent trả lời trực tiếp từ System Prompt, không cần gọi Tool.",
+    "complexity": "Low"
+  },
+  {
+    "id": "TC02",
+    "type": "single_tool_query",
+    "question": "Hãy tra cứu lộ trình tuyến E01 của VinBus.",
+    "expected_behavior": "Agent gọi Tool 'route_lookup' với route_number E01 và trả về điểm dừng, giờ hoạt động, tần suất.",
+    "complexity": "Medium"
+  },
+  {
+    "id": "TC03",
+    "type": "monthly_pass_registration",
+    "question": "Đăng ký vé tháng VinBus tuyến E01 cho Nguyễn Văn An, số điện thoại 0901234567, thời hạn 1 tháng.",
+    "expected_behavior": "Agent gọi Tool 'monthly_pass_registration' với đúng họ tên, số điện thoại, tuyến và thời hạn.",
+    "complexity": "Medium"
+  },
+  {
+    "id": "TC04",
+    "type": "multi_step_reasoning",
+    "question": "Tôi muốn đi VinBus từ Mỹ Đình đến VinUni và đăng ký luôn vé tháng tuyến phù hợp cho Nguyễn Văn An, số điện thoại 0901234567.",
+    "expected_behavior": "Agent phân tích nhu cầu tuyến, sau đó thực hiện đăng ký vé tháng với thông tin hành khách.",
+    "complexity": "High"
+  },
+  {
+    "id": "TC05",
+    "type": "edge_case_handling",
+    "question": "Hãy tra cứu lộ trình tuyến E99 của VinBus.",
+    "expected_behavior": "Agent nhận trạng thái NOT_FOUND và phản hồi lịch sự, không bịa đặt thông tin tuyến.",
+    "complexity": "Medium"
+  }
+]

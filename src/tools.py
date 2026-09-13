@@ -11,41 +11,37 @@ from typing import Dict, Any
 # ==============================================================================
 
 TOOLS_SCHEMA = [
-    # Tool 1: Đã được định nghĩa mẫu sẵn cho Học viên tham khảo
+    # Tool 1: Tra cứu lộ trình tuyến VinBus
     {
-        "name": "academic_query",
-        "description": "Tra cứu hồ sơ và thông tin học vụ của sinh viên VinUni bằng mã sinh viên.",
+        "name": "route_lookup",
+        "description": "Tra cứu lộ trình, điểm dừng và giờ hoạt động của tuyến xe bus điện VinBus.",
         "parameters": {
             "type": "object",
             "properties": {
-                "student_id": {
+                "route_number": {
                     "type": "string",
-                    "description": "Mã sinh viên cần tra cứu (ví dụ: 'SV2026001')"
+                    "description": "Mã tuyến VinBus cần tra cứu (ví dụ: 'E01')"
                 }
             },
-            "required": ["student_id"]
+            "required": ["route_number"]
         }
     },
     
     # --------------------------------------------------------------------------
-    # TODO 1.2: HỌC VIÊN HOÀN THIỆN TOOL SCHEMA CHO 'schedule_appointment'
-    # 🎯 YÊU CẦU THIẾT KẾ SCHEMA (JSON SCHEMA STANDARD):
-    # 1. Tool dùng để đặt lịch hẹn tư vấn học vụ với Cố vấn học tập VinUni.
-    # 2. Thiết kế các tham số (properties) để LLM trích xuất:
-    #    - student_id (string): Mã sinh viên cần đặt lịch (ví dụ: 'SV2026001')
-    #    - datetime_str (string): Thời gian hẹn (ví dụ: '14:00 15/09/2026')
-    #    - advisor_name (string): Tên cố vấn học tập
-    # 3. Khai báo danh sách các trường bắt buộc (required).
+    # Tool 2: Đăng ký vé tháng VinBus
     # --------------------------------------------------------------------------
     {
-        "name": "schedule_appointment",
-        "description": "Đặt lịch hẹn tư vấn học vụ với Cố vấn học tập VinUni.",
+        "name": "monthly_pass_registration",
+        "description": "Đăng ký vé tháng VinBus cho hành khách theo tuyến và thời hạn lựa chọn.",
         "parameters": {
             "type": "object",
             "properties": {
-                # TODO 1.2: Khai báo các thuộc tính tham số cho Tool tại đây...
+                "passenger_name": {"type": "string", "description": "Họ tên hành khách đăng ký vé"},
+                "phone_number": {"type": "string", "description": "Số điện thoại nhận thông tin đăng ký"},
+                "route_number": {"type": "string", "description": "Mã tuyến VinBus muốn đăng ký (ví dụ: 'E01')"},
+                "duration_months": {"type": "integer", "description": "Số tháng đăng ký vé"}
             },
-            "required": [] # TODO 1.2: Khai báo danh sách các trường bắt buộc tại đây...
+            "required": ["passenger_name", "phone_number", "route_number", "duration_months"]
         }
     }
 ]
@@ -55,57 +51,54 @@ TOOLS_SCHEMA = [
 # ==============================================================================
 
 MOCK_DATABASE = {
-    "SV2026001": {
-        "full_name": "Nguyễn Văn An",
-        "class": "AI-K4",
-        "gpa": 3.85,
-        "email": "an.nv@vinuni.edu.vn",
-        "status": "Đang học",
-        "advisor": "PGS.TS Nguyễn Văn A"
+    "E01": {
+        "route_name": "Bến xe Mỹ Đình - VinUni",
+        "stops": ["Mỹ Đình", "Cầu Giấy", "Khu đô thị Ocean Park", "VinUni"],
+        "operating_hours": "05:30 - 22:00",
+        "frequency": "15 - 20 phút/chuyến"
     },
-    "SV2026002": {
-        "full_name": "Trần Thị Bình",
-        "class": "AI-K4",
-        "gpa": 3.60,
-        "email": "binh.tt@vinuni.edu.vn",
-        "status": "Đang học",
-        "advisor": "TS. Lê Thị B"
+    "E02": {
+        "route_name": "Công viên Cầu Giấy - VinUni",
+        "stops": ["Công viên Cầu Giấy", "Times City", "Gia Lâm", "VinUni"],
+        "operating_hours": "06:00 - 21:30",
+        "frequency": "20 phút/chuyến"
     }
 }
 
 
-def execute_academic_query(student_id: str) -> str:
-    """Thực thi tra cứu học vụ theo mã sinh viên"""
-    student = MOCK_DATABASE.get(student_id.strip().upper())
-    if student:
+def execute_route_lookup(route_number: str) -> str:
+    """Tra cứu lộ trình VinBus theo mã tuyến."""
+    route = MOCK_DATABASE.get(route_number.strip().upper())
+    if route:
         return json.dumps({
             "status": "SUCCESS",
-            "student_id": student_id,
-            "data": student
+            "route_number": route_number.strip().upper(),
+            "data": route
         }, ensure_ascii=False)
     else:
         return json.dumps({
             "status": "NOT_FOUND",
-            "message": f"Không tìm thấy dữ liệu sinh viên có mã '{student_id}'"
+            "message": f"Không tìm thấy tuyến VinBus có mã '{route_number}'."
         }, ensure_ascii=False)
 
 
-def execute_schedule_appointment(student_id: str, datetime_str: str, advisor_name: str = "PGS.TS Nguyễn Văn A") -> str:
-    """Thực thi đặt lịch hẹn tư vấn học vụ"""
+def execute_monthly_pass_registration(passenger_name: str, phone_number: str, route_number: str, duration_months: int) -> str:
+    """Mô phỏng đăng ký vé tháng VinBus."""
     return json.dumps({
         "status": "SUCCESS",
-        "booking_id": f"BK-{student_id}-99",
-        "student_id": student_id,
-        "datetime": datetime_str,
-        "advisor": advisor_name,
-        "message": f"Đặt lịch thành công cho sinh viên {student_id} với {advisor_name} vào lúc {datetime_str}."
+        "registration_id": f"VB-{phone_number[-4:]}-99",
+        "passenger_name": passenger_name,
+        "phone_number": phone_number,
+        "route_number": route_number.strip().upper(),
+        "duration_months": duration_months,
+        "message": f"Đăng ký vé tháng thành công cho {passenger_name}, tuyến {route_number.upper()}, thời hạn {duration_months} tháng."
     }, ensure_ascii=False)
 
 
 # Router gọi tool thực tế
 TOOL_ROUTER = {
-    "academic_query": execute_academic_query,
-    "schedule_appointment": execute_schedule_appointment
+    "route_lookup": execute_route_lookup,
+    "monthly_pass_registration": execute_monthly_pass_registration
 }
 
 def dispatch_tool_call(tool_name: str, arguments: Dict[str, Any]) -> str:
