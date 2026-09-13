@@ -30,13 +30,17 @@ Dán 1 đoạn trích xuất log tiêu biểu từ file `docs/trace_waterfall.js
     "step": 1,
     "action_type": "TOOL_EXECUTION",
     "tool_name": "route_lookup",
-    "arguments": {"route_number": "E01"},
+    "arguments": {
+      "route_number": "E01"
+    },
     "observation": {
       "status": "SUCCESS",
       "route_number": "E01",
       "data": {
         "route_name": "Bến xe Mỹ Đình - VinUni",
-        "operating_hours": "05:30 - 22:00"
+        "stops": ["Mỹ Đình", "Cầu Giấy", "Khu đô thị Ocean Park", "VinUni"],
+        "operating_hours": "05:30 - 22:00",
+        "frequency": "15 - 20 phút/chuyến"
       }
     },
     "latency_ms": 120.5
@@ -50,8 +54,8 @@ Dán 1 đoạn trích xuất log tiêu biểu từ file `docs/trace_waterfall.js
 
 - [x] Đã điền API Key thật trong `.env` và xác nhận Agent chạy trên Groq API thật.
 - **Tổng số Test Cases đã chạy thành công:** 5 / 5 test cases.
-- **Số lượt gọi Tool qua MCP Server chính xác:** 3 lượt.
-- **Kết quả đẩy Repo nộp bài:** [ ] Đã Commit và Push mã nguồn thành công lên GitHub cá nhân.
+- **Số lượt gọi Tool qua MCP Server chính xác:** 4 lượt.
+- **Kết quả đẩy Repo nộp bài:** [x] Đã Commit và Push mã nguồn thành công lên GitHub cá nhân.
 
 ---
 
